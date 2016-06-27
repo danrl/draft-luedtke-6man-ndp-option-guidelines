@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<rfc category="bcp" ipr="trust200902" docName='draft-luedtke-6man-ndp-option-guidelines-00'>
+<?rfc toc="yes"?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc iprnotified="no"?>
+<?rfc strict="yes"?>
+<?rfc compact="yes" ?>
+
+
+<front>
+  <title abbrev="RA Option Guidelines">
+    Guidelines for new Neighbor Discovery Protocol options
+  </title>
+
+  <author initials="D.L." surname="Luedtke" fullname="Dan Luedtke">
+    <organization>SixFw</organization>
+    <address>
+      <postal>
+        <street></street>
+        <city>Munich</city>
+        <region>Bavaria</region>
+        <code></code>
+        <country>DE</country>
+      </postal>
+      <phone></phone>
+      <email>mail@danrl.com</email>
+      <uri>https://www.danrl.com</uri>
+    </address>
+  </author>
+
+  <author initials="B.S." surname="Sarikaya" fullname="Behcet Sarikaya">
+    <organization>Huawei USA</organization>
+    <address>
+      <postal>
+        <street>5340 Legacy Dr. Building 175</street>
+        <city>Plano</city>
+        <region>TX</region>
+        <code>75024</code>
+      </postal>
+      <phone></phone>
+      <email>sarikaya@ieee.org</email>
+    </address>
+  </author>
+
+  <date year="2016" />
+  <area>Internet</area>
+  <workgroup>Network Working Group</workgroup>
+  <keyword>I-D</keyword>
+  <keyword>Internet-Draft</keyword>
+  <keyword>Neighbor Discovery</keyword>
+  <keyword>Duplicate Address Detection</keyword>
+  <keyword>ND Relay Agent</keyword>
+  <keyword>END</keyword>
+
+  <abstract>
+    <t>
+      This document advises guidelines for defining new Router Advertisement options.
+    </t>
+  </abstract>
+</front>
+
+
+<middle>
+  <section title="Introduction">
+    <t>
+      Router Advertisement messages as defined by the Neighbor Discovery Protocol (NDP) <xref target="RFC4861"/> are sent by routers to hosts on the link.
+      Router Advertisement messages are an important tool in IPv6.
+      Many key protocols are defined around Router Advertisement messages.
+    </t>
+    <t>
+      Neighbor Discovery Protocol is used by IPv6 hosts to discover the presence of other hosts and key information about neighbor hosts such as their link layer address <xref target="RFC4861"/>.
+      Another important functionality is Stateless Address Autoconfiguration (SLAAC) as defined by <xref target="RFC4862"/>.
+    </t>
+    <t>
+      Yet another, perhaps more important functionality of Router Advertisement messages is route configuration.
+      <xref target="RFC4191"/> defines Prefix List and Default Router List or Routing Table structures that the hosts maintain.
+      Routing table maintainance is important for an increasing number of multi-interfaced hosts that use the strong end host model <xref target="RFC1122"/>, <xref target="RFC6250"/>.
+    </t>
+    <t>
+      <xref target="RFC7227"/> defines the guidelines to follow when creating new DHCP options.
+      Similar to DHCP, router advertisement messages carry options and the need to define new options arises every now and then.
+    </t>
+    <t>
+      So, although a given solution would work, and might even be space, time, or aesthetically optimal, a given option is presented with a series of ever-worsening challenges to be adopted:
+      <list>
+        <t>If it doesn't fit neatly into existing configuration files.</t>
+        <t>If it requires source code changes to be adopted and, hence, upgrades of deployed software.</t>
+        <t>If it requires behavior changes or new timers to be adopted and, hence, upgrades of deployed software.</t>
+        <t>If it does not share its deployment fate in a general manner with other options, standing alone in requiring code changes or reworking configuration file syntaxes.</t>
+        <t>If the option would work well in the particular deployment environment the proponents currently envision, but it has equally valid uses in some other environment where the proposed option format would fail or would produce inconsistent results.</t>
+      </list>
+      There are many things Router Advertisement option creators can do to avoid the pitfalls in this list entirely, or failing that, to make software implementors' lives easier and improve the options chances for widespread adoption.
+    </t>
+    <t>
+    This document is envisaged as a help for protocol developers that define new options and for expert reviewers that review submitted proposals.
+    </t>
+  </section>
+
+  <section title="Terminology">
+    <t>
+      The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <xref target="RFC2119"></xref>.
+    </t>
+  </section>
+
+  <section anchor="configuration" title="Configuration using Router Advertisements">
+    <t>
+      Routers advertise their presence in conjunction with various link and Internet parameters either periodically, or in response to a Router Solicitation message.
+      Router Advertisement messages carry options containing parameters such as Prefix Information, Recursive DNS Servers and Link MTU.
+      Unlike DHCPv6, the operation is stateless.
+      A host cannot request specific or further options from a router, neither by name nor by any other identifier.
+      Note that the PvD Identity option defined in <xref target="I-D.ietf-mif-mpvd-ndp-support"/> is an exception to this, see <xref target="pvd"/>.
+      However, the overall operation of solicitation and advertising a router is still stateless.
+    </t>
+    <t>
+      Router Advertisement options are sent to all hosts on a link.
+      The parameters are the same for all hosts on link.
+      This may be only one host on point-to-point links.
+    </t>
+    <t>
+      Router Advertisement options are commonly used to distribute
+      <list style="letters">
+        <t>on-link specific parameters, such as network layer parameters or route prefixes, and</t>
+        <t>related configuration parameters, such as DNS configuration (cp. <xref target="RFC6106"/>).</t>
+      </list>
+    </t>
+  </section>
+
+  <section anchor="pvd" title="Provisioning Domains">
+    <t>
+      Provisioning domains provide a good abstraction for network configuration data which is discussed in this section.
+    </t>
+    <t>
+      Consistent set of network configuration information is called provisioning domain (PvD) <xref target="I-D.ietf-mif-mpvd-arch"/>.
+      The hosts may be connected to one or more provisioning domains.
+      In case of multi-prefix multihoming, more than one provisioning domain is present on a single link.
+      In case of multi-prefix multiple interface environments, elements of the same domain may be present on multiple links.
+      So PvD identity is important by the host to know the identity of the provisioning domain that is associated with the configuration information.
+    </t>
+    <t>
+      Provisioning domains give rise to a new set of hosts called PvD aware hosts.
+      PvD aware hosts support association of configuration information into PvDs and use these PvDs to serve requests for network connections.
+    </t>
+    <t>
+      Routers may advertise configuration information related to provisioning domains.
+      PvDs can be constructed from Router Advertisement options.
+      PvDs constructed based on such information are called explicit PvDs.
+    </t>
+    <t>
+      Two router advertisement options are defined for this purpose: PvD identity and PvD container <xref target="I-D.ietf-mif-mpvd-ndp-support"/> options.
+    </t>
+    <t>
+      PvD identity explicitly indicates the identity of the provisioning domain, such as Network Access Identity (NAI) realm like example.com that is associated with the configuration information encapsulated by the PVD container option <xref target="I-D.ietf-mif-mpvd-id"/>.
+      PvD content may be encapsulated in a separate RA option called PvD Container Option.
+      All router advertisement options that make up the configuration data are placed in the container option of an explicit PvD.
+    </t>
+    <t>
+      PvD Identity option may be sent alone by the router without PvD container option to inform the existence of a provisioning domain.
+      PvD Identity option can also be sent by the hosts in Router Solicitation (RS) messages to solicit configuration data from this specific provisioning domain.
+    </t>
+  </section>
+
+  <section anchor="considerations" title="Considerations on the Options">
+    <section anchor="single-combined" title="Classification of Options">
+      <t>
+        Router Advertisement options can be classified as follows:
+        <list style="letters">
+          <t>Singleton options providing parameters related to all or no prefixes or routes, and</t>
+          <t>Combined options providing parameters related to one or more specific prefixes or routes, and</t>
+          <t>Options expanding the capacity of a field of an existing option.</t>
+        </list>
+        Being aware of the classification of the proposed option is essential for a consistent definition and implementation.
+      </t>
+    </section>
+
+    <section anchor="single" title="Considerations on Singleton Options">
+      <t>
+        Implementers MUST be able to decide which prefixes or routes a singleton option applies to.
+        If there is considerable amount of difficulty to decide on the prefixes, the new document should clarify it in the text.
+        If it cannot be clearly explained then the right approach is to make the association explicit by using combined options, see <xref target="comb"/>.
+      </t>
+      <t>
+        Examples of such options are given in <xref target="RFC6106"/> and <xref target="I-D.ietf-mif-mpvd-ndp-support"/>.
+      </t>
+    </section>
+
+    <section anchor="comb" title="Considerations on Combined Options">
+      <t>
+        Stacking more than one data results in combined options.
+        Care should be taken in using combined options.
+        Data that are associated with each other should be combined together.
+        Otherwise it should be preferred to declare them as singleton options.
+        In combined options each piece of data is defined as fields of the option.
+      </t>
+      <t>
+        When defining a new option, the most important question to answer is what will be the host's behavior when it receives the option.
+        If this question cannot be answered without associating the option's data with another option's data then such an option is a good candidate for combining.
+      </t>
+      <t>
+        It should be noted that combined options are typically used in defining data that are associated with route prefixes.
+      </t>
+    </section>
+
+    <section anchor="exp" title="Considerations on Expanding Options">
+      <t>
+        An option expanding the capacity of an existing option's field inherits the class of its parent option.
+        An option expanding the capacity of a Router Advertisement field MUST always be a singleton option.
+        An example is given in <xref target="RFC5175"/>.
+      </t>
+    </section>
+
+    <section anchor="fieldsizes" title="Considerations on Field Sizes">
+      <t>
+        Fields in RA options can have a fixed or a variable length.
+        The size of a fixed length field SHOULD be chosen so that the field fits into a standard type, such as uint8_t, uint16_t, uint32_t, and uint64_t.
+      </t>
+      <t>
+        Documents defining smaller fields that can be considered as flags, i.e. fields of one or two bits, SHOULD make use of the Flags Expansion option as defined in <xref target="RFC5175"/>, if applicable.
+      </t>
+      <t>
+        Fields containing prefixes or addresses or lists of such MUST be sized using a multiple of 16 octets.
+        For example, such a field SHOULD NOT be specified of length smaller than sizeof(struct in6_addr).
+        Otherwise implementations may be forced to fill the field using inet_pton() or define it to be of variable length, which is strongly discouraged.
+       </t>
+    </section>
+
+    <section anchor="fieldvalues" title="Considerations on Field Values">
+      <t>
+        Documents proposing options including a lifetime field SHOULD use unsigned integers and MAY use units of seconds.
+        A lifetime of zero SHOULD indicate that the option is no longer valid.
+        The latter is important when it is required to invalidate the option.
+        Options in need of a special value for infinity SHOULD use the lifetime field's maximum value (e.g. 65535 in case of 16-bit unsigned integer).
+        Any other non-zero value MAY be defining the option's lifetime in seconds.
+      </t>
+      <t>
+        The starting octet for IPv6 addresses or prefixes or lists of such SHOULD be a multiple of 8.
+        In cases where this is not feasible, the starting octet SHOULD be a multiple of 4.
+      </t>
+      <t>
+        Options containing domain names or lists of such, SHOULD encode the data using the technique described in Section 3.1 of <xref target="RFC1035"/>.
+        By this technique, each domain name is represented as a sequence of labels ending in a zero octet, defined as domain name representation.
+        For more than one domain name, the corresponding domain name representations are concatenated as they are.
+        Note that for the simple decoding, the domain names MUST NOT be encoded in a compressed form, as described in Section 4.1.4 of <xref target="RFC1035"/>.
+        Remaining octets other than the encoding parts of the domain name representations MUST be padded with zeros.
+      </t>
+    </section>
+
+
+    <section anchor="alignment" title="Considerations on Alignment">
+      <t>
+        RA options MUST align to the next 8 octet boundary.
+        Documents defining new options SHOULD define unused octects to be set to zero.
+        Padding wiht zeroes to the next 8 octet boundary is common practice.
+      </t>
+    </section>
+
+    <section anchor="packetsize" title="Considerations on Packet Size">
+      <t>
+      When defining new options, sometimes the maximum transmission unit
+   size issues need to be considered.  In this case, a rough worst case
+   calculation should be undertaken. We present such a calculation below.
+      </t>
+      <t>
+        Neighbor Discovery Protocol messages SHOULD NOT be subject to fragmentation.
+        Therefore, a Router Advertisement option's overall length is bounded by the following upper limit:
+      </t>
+      <figure align="center"><artwork align="center"><![CDATA[
+              IPv6 Minimum MTU   1280 [octets]
+-           IPv6 header length     40 [octets]
+-             RA header length     16 [octets]
+- Expanded Flags option length      8 [octets]
+----------------------------------------------
+                                 1216 [octets]
+                                 =============
+      ]]></artwork>
+      </figure>
+      <t>
+        A Router Advertisement option's overall length MUST NOT exceed 1216 octets.
+      </t>
+      <t>
+        Documents proposing large or variable length options SHOULD include an analysis clearly indicating that the size is not exceeded.
+      </t>
+    </section>
+        <section anchor="multiple" title="RAs Spanning Over Multiple Packets">
+        <t>
+        Due to many and/or large options, a Router Advertisement may not fit into a single packet, such RAs are called RAs spanning over multiple packets.
+        In this case the router sends multiple Router Advertisement messages with identical ICMPv6 header, filling each of the messages with different options.
+        </t>
+        <t>
+        Note that, if used, the Flags Expansion option as defined in <xref target="RFC5175"/> is present in all Router Advertisement messages with identical ICMPv6 header.
+      </t>
+        </section>
+  </section>
+
+  <section anchor="conclusion" title="Recommended Sections">
+    <t>
+      Router advertisement messages are sent from the router to the hosts.
+      A new document MUST include a section for each of these entities.
+      In other sections the need for the new option(s) are explained.
+      Usually each option is detailed in separate sections.
+    </t>
+
+    <section anchor="rule55" title="Section on Host Configuration ">
+      <t>
+        This section defines the host behavior related to the option(s) defined.
+        It should be specified under which conditions the option(s) defined can be ignored.
+      </t>
+      <t>
+        In case the host should not ignore the option(s) defined, this section should explain what should the host do, where the information is stored and how the networking behavior of the host will change after receiving the option(s).
+      </t>
+      <t>
+        Host behavior should be detailed based on the field values defined in the new option(s). Each new field may carry different values that require attention by the host. These should be clearly explained.
+      </t>
+    </section>
+
+    <section anchor="newoptions" title="Section on Router Configuration">
+      <t>
+        This section defines the router behavior related to the option(s) defined.
+        This includes a description of required behavior of the router in sending this option(s) to the hosts.
+        It should also include what the routers should avoid, i.e. the behavior that is not allowed.
+      </t>
+      <t>
+        Router behavior should be detailed based on the fields defined in the new option(s).
+        Each new field should be covered in detail.
+      </t>
+    </section>
+  </section>
+
+  <section title="Security Considerations">
+    <t>
+      This document shares the security issues of Neighbor Discovery Protocol that are documented in the "Security Considerations" section of <xref target="RFC4861"/>.
+    </t>
+  </section>
+
+  <section anchor='iana' title="IANA Considerations">
+    <t>
+      None.
+    </t>
+  </section>
+
+  <section title='Acknowledgements'>
+    <t>
+      TBD.
+    </t>
+  </section>
+</middle>
+
+
+<back>
+  <references title='Normative References'>
+    <?rfc include='reference.RFC.1035'?>
+    <?rfc include='reference.RFC.1122'?>
+    <?rfc include='reference.RFC.2119'?>
+    <?rfc include='reference.RFC.4191'?>
+    <?rfc include='reference.RFC.4861'?>
+    <?rfc include='reference.RFC.4862'?>
+    <?rfc include='reference.RFC.5175'?>
+    <?rfc include='reference.RFC.6106'?>
+    <?rfc include='reference.RFC.6250'?>
+    <?rfc include='reference.RFC.7227'?>
+  </references>
+
+  <references title='Informative References'>
+    <?rfc include='reference.I-D.ietf-mif-mpvd-arch'?>
+    <?rfc include='reference.I-D.ietf-mif-mpvd-ndp-support'?>
+    <?rfc include='reference.I-D.ietf-mif-mpvd-id'?>
+  </references>
+</back>
+</rfc>
