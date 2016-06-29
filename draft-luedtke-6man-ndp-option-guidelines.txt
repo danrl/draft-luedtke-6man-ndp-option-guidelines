@@ -5,17 +5,17 @@
 Network Working Group                                         D. Luedtke
 Internet-Draft                                                     SixFw
 Intended status: Best Current Practice                       B. Sarikaya
-Expires: December 29, 2016                                    Huawei USA
-                                                           June 27, 2016
+Expires: December 31, 2016                                    Huawei USA
+                                                           June 29, 2016
 
 
-         Guidelines for new Neighbor Discovery Protocol options
-              draft-luedtke-6man-ndp-option-guidelines-00
+            Guidelines for New Router Advertisement Options
+                    draft-ietf-6man-ra-guidelines-03
 
 Abstract
 
-   This document advises guidelines for defining new Router
-   Advertisement options.
+   This document advises guidelines for defining new Neighbor Discovery
+   Protocol options.
 
 Status of This Memo
 
@@ -32,7 +32,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 29, 2016.
+   This Internet-Draft will expire on December 31, 2016.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 1]
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 1]
 
 Internet-Draft            RA Option Guidelines                 June 2016
 
@@ -63,96 +63,66 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Configuration using Router Advertisements . . . . . . . . . .   3
-   4.  Provisioning Domains  . . . . . . . . . . . . . . . . . . . .   4
-   5.  Considerations on the Options . . . . . . . . . . . . . . . .   5
-     5.1.  Classification of Options . . . . . . . . . . . . . . . .   5
+   4.  Provisioning Domains  . . . . . . . . . . . . . . . . . . . .   3
+   5.  Considerations on the Options . . . . . . . . . . . . . . . .   4
+     5.1.  Classification of Options . . . . . . . . . . . . . . . .   4
      5.2.  Considerations on Singleton Options . . . . . . . . . . .   5
      5.3.  Considerations on Combined Options  . . . . . . . . . . .   5
-     5.4.  Considerations on Expanding Options . . . . . . . . . . .   6
-     5.5.  Considerations on Field Sizes . . . . . . . . . . . . . .   6
+     5.4.  Considerations on Expanding Options . . . . . . . . . . .   5
+     5.5.  Considerations on Field Sizes . . . . . . . . . . . . . .   5
      5.6.  Considerations on Field Values  . . . . . . . . . . . . .   6
-     5.7.  Considerations on Alignment . . . . . . . . . . . . . . .   7
-     5.8.  Considerations on Packet Size . . . . . . . . . . . . . .   7
+     5.7.  Considerations on Alignment . . . . . . . . . . . . . . .   6
+     5.8.  Considerations on Packet Size . . . . . . . . . . . . . .   6
      5.9.  RAs Spanning Over Multiple Packets  . . . . . . . . . . .   7
-   6.  Recommended Sections  . . . . . . . . . . . . . . . . . . . .   8
-     6.1.  Section on Host Configuration . . . . . . . . . . . . . .   8
+   6.  Recommended Sections  . . . . . . . . . . . . . . . . . . . .   7
+     6.1.  Section on Host Configuration . . . . . . . . . . . . . .   7
      6.2.  Section on Router Configuration . . . . . . . . . . . . .   8
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
-   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     10.2.  Informative References . . . . . . . . . . . . . . . . .  10
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   8
+     10.2.  Informative References . . . . . . . . . . . . . . . . .   9
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
 
-   Router Advertisement messages as defined by the Neighbor Discovery
-   Protocol (NDP) [RFC4861] are sent by routers to hosts on the link.
-   Router Advertisement messages are an important tool in IPv6.  Many
-   key protocols are defined around Router Advertisement messages.
+   Neighbor Discovery Protocol (NDP) [RFC4861] is used by IPv6 hosts to
+   discover the presence of other nodes on the link.  It features
+   important connectivity functionality such as link-layer address
+   discovery and Stateless Address Autoconfiguration (SLAAC) as defined
+   by [RFC4862].
 
-   Neighbor Discovery Protocol is used by IPv6 hosts to discover the
-   presence of other hosts and key information about neighbor hosts such
-   as their link layer address [RFC4861].  Another important
-   functionality is Stateless Address Autoconfiguration (SLAAC) as
-   defined by [RFC4862].
+   Unlike DHCPv6 ([RFC3315]), NDP is usually implemented in the
+   operating system kernel.  Frequent kernel updates due to new NDP
+   options are seen critically.  This requires new NDP option proposals
+   to clearly state the necessity and the benefits of a new option.
 
-   Yet another, perhaps more important functionality of Router
-   Advertisement messages is route configuration.  [RFC4191] defines
-   Prefix List and Default Router List or Routing Table structures that
-   the hosts maintain.  Routing table maintainance is important for an
-   increasing number of multi-interfaced hosts that use the strong end
-   host model [RFC1122], [RFC6250].
+   This document is envisaged as a help for protocol developers that
+   define new NDP options and for expert reviewers that review submitted
+   proposals.
 
 
 
 
 
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 2]
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 2]
 
 Internet-Draft            RA Option Guidelines                 June 2016
 
-
-   [RFC7227] defines the guidelines to follow when creating new DHCP
-   options.  Similar to DHCP, router advertisement messages carry
-   options and the need to define new options arises every now and then.
-
-   So, although a given solution would work, and might even be space,
-   time, or aesthetically optimal, a given option is presented with a
-   series of ever-worsening challenges to be adopted:
-
-      If it doesn't fit neatly into existing configuration files.
-
-      If it requires source code changes to be adopted and, hence,
-      upgrades of deployed software.
-
-      If it requires behavior changes or new timers to be adopted and,
-      hence, upgrades of deployed software.
-
-      If it does not share its deployment fate in a general manner with
-      other options, standing alone in requiring code changes or
-      reworking configuration file syntaxes.
-
-      If the option would work well in the particular deployment
-      environment the proponents currently envision, but it has equally
-      valid uses in some other environment where the proposed option
-      format would fail or would produce inconsistent results.
-
-   There are many things Router Advertisement option creators can do to
-   avoid the pitfalls in this list entirely, or failing that, to make
-   software implementors' lives easier and improve the options chances
-   for widespread adoption.
-
-   This document is envisaged as a help for protocol developers that
-   define new options and for expert reviewers that review submitted
-   proposals.
 
 2.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
+
+   The terms "link", "node", "host" and "router" in this document are to
+   be interpreted as described in the "Terminology" section of
+   [RFC4861].
 
 3.  Configuration using Router Advertisements
 
@@ -162,14 +132,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
    containing parameters such as Prefix Information, Recursive DNS
    Servers and Link MTU.  Unlike DHCPv6, the operation is stateless.  A
    host cannot request specific or further options from a router,
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 3]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
-
    neither by name nor by any other identifier.  Note that the PvD
    Identity option defined in [I-D.ietf-mif-mpvd-ndp-support] is an
    exception to this, see Section 4.  However, the overall operation of
@@ -199,6 +161,15 @@ Internet-Draft            RA Option Guidelines                 June 2016
    single link.  In case of multi-prefix multiple interface
    environments, elements of the same domain may be present on multiple
    links.  So PvD identity is important by the host to know the identity
+
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 3]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
    of the provisioning domain that is associated with the configuration
    information.
 
@@ -218,14 +189,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
    PvD identity explicitly indicates the identity of the provisioning
    domain, such as Network Access Identity (NAI) realm like example.com
    that is associated with the configuration information encapsulated by
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 4]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
-
    the PVD container option [I-D.ietf-mif-mpvd-id].  PvD content may be
    encapsulated in a separate RA option called PvD Container Option.
    All router advertisement options that make up the configuration data
@@ -254,6 +217,15 @@ Internet-Draft            RA Option Guidelines                 June 2016
    Being aware of the classification of the proposed option is essential
    for a consistent definition and implementation.
 
+
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 4]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
 5.2.  Considerations on Singleton Options
 
    Implementers MUST be able to decide which prefixes or routes a
@@ -273,14 +245,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
    each other should be combined together.  Otherwise it should be
    preferred to declare them as singleton options.  In combined options
    each piece of data is defined as fields of the option.
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 5]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
 
    When defining a new option, the most important question to answer is
    what will be the host's behavior when it receives the option.  If
@@ -310,6 +274,14 @@ Internet-Draft            RA Option Guidelines                 June 2016
 
    Fields containing prefixes or addresses or lists of such MUST be
    sized using a multiple of 16 octets.  For example, such a field
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 5]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
    SHOULD NOT be specified of length smaller than sizeof(struct
    in6_addr).  Otherwise implementations may be forced to fill the field
    using inet_pton() or define it to be of variable length, which is
@@ -329,14 +301,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
    The starting octet for IPv6 addresses or prefixes or lists of such
    SHOULD be a multiple of 8.  In cases where this is not feasible, the
    starting octet SHOULD be a multiple of 4.
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 6]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
 
    Options containing domain names or lists of such, SHOULD encode the
    data using the technique described in Section 3.1 of [RFC1035].  By
@@ -366,6 +330,14 @@ Internet-Draft            RA Option Guidelines                 June 2016
    fragmentation.  Therefore, a Router Advertisement option's overall
    length is bounded by the following upper limit:
 
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 6]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
                             IPv6 Minimum MTU   1280 [octets]
               -           IPv6 header length     40 [octets]
               -             RA header length     16 [octets]
@@ -385,15 +357,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
    Due to many and/or large options, a Router Advertisement may not fit
    into a single packet, such RAs are called RAs spanning over multiple
    packets.  In this case the router sends multiple Router Advertisement
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 7]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
-
    messages with identical ICMPv6 header, filling each of the messages
    with different options.
 
@@ -423,6 +386,14 @@ Internet-Draft            RA Option Guidelines                 June 2016
    the new option(s).  Each new field may carry different values that
    require attention by the host.  These should be clearly explained.
 
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 7]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
 6.2.  Section on Router Configuration
 
    This section defines the router behavior related to the option(s)
@@ -440,23 +411,13 @@ Internet-Draft            RA Option Guidelines                 June 2016
    Protocol that are documented in the "Security Considerations" section
    of [RFC4861].
 
-
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 8]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
-
 8.  IANA Considerations
 
    None.
 
 9.  Acknowledgements
 
-   TBD.
+   Mark Smith, Brian Carpenter
 
 10.  References
 
@@ -476,6 +437,19 @@ Internet-Draft            RA Option Guidelines                 June 2016
               DOI 10.17487/RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
+   [RFC3315]  Droms, R., Ed., Bound, J., Volz, B., Lemon, T., Perkins,
+              C., and M. Carney, "Dynamic Host Configuration Protocol
+              for IPv6 (DHCPv6)", RFC 3315, DOI 10.17487/RFC3315, July
+              2003, <http://www.rfc-editor.org/info/rfc3315>.
+
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 8]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
    [RFC4191]  Draves, R. and D. Thaler, "Default Router Preferences and
               More-Specific Routes", RFC 4191, DOI 10.17487/RFC4191,
               November 2005, <http://www.rfc-editor.org/info/rfc4191>.
@@ -494,17 +468,6 @@ Internet-Draft            RA Option Guidelines                 June 2016
               Advertisement Flags Option", RFC 5175,
               DOI 10.17487/RFC5175, March 2008,
               <http://www.rfc-editor.org/info/rfc5175>.
-
-
-
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016               [Page 9]
-
-Internet-Draft            RA Option Guidelines                 June 2016
-
 
    [RFC6106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
               "IPv6 Router Advertisement Options for DNS Configuration",
@@ -533,6 +496,16 @@ Internet-Draft            RA Option Guidelines                 June 2016
               draft-ietf-mif-mpvd-id-02 (work in progress), October
               2015.
 
+
+
+
+
+
+Luedtke & Sarikaya      Expires December 31, 2016               [Page 9]
+
+Internet-Draft            RA Option Guidelines                 June 2016
+
+
    [I-D.ietf-mif-mpvd-ndp-support]
               Korhonen, J., Krishnan, S., and S. Gundavelli, "Support
               for multiple provisioning domains in IPv6 Neighbor
@@ -548,18 +521,6 @@ Authors' Addresses
 
    Email: mail@danrl.com
    URI:   https://www.danrl.com
-
-
-
-
-
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016              [Page 10]
-
-Internet-Draft            RA Option Guidelines                 June 2016
 
 
    Behcet Sarikaya
@@ -596,21 +557,4 @@ Internet-Draft            RA Option Guidelines                 June 2016
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Luedtke & Sarikaya      Expires December 29, 2016              [Page 11]
+Luedtke & Sarikaya      Expires December 31, 2016              [Page 10]

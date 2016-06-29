@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd">
-<rfc category="bcp" ipr="trust200902" docName='draft-luedtke-6man-ndp-option-guidelines-00'>
+<rfc category="bcp" ipr="trust200902" docName='draft-ietf-6man-ra-guidelines-03'>
 <?rfc toc="yes"?>
 <?rfc symrefs="yes" ?>
 <?rfc sortrefs="yes"?>
@@ -11,7 +11,7 @@
 
 <front>
   <title abbrev="RA Option Guidelines">
-    Guidelines for new Neighbor Discovery Protocol options
+    Guidelines for New Router Advertisement Options
   </title>
 
   <author initials="D.L." surname="Luedtke" fullname="Dan Luedtke">
@@ -53,10 +53,9 @@
   <keyword>Duplicate Address Detection</keyword>
   <keyword>ND Relay Agent</keyword>
   <keyword>END</keyword>
-
   <abstract>
     <t>
-      This document advises guidelines for defining new Router Advertisement options.
+      This document advises guidelines for defining new Neighbor Discovery Protocol options.
     </t>
   </abstract>
 </front>
@@ -65,42 +64,25 @@
 <middle>
   <section title="Introduction">
     <t>
-      Router Advertisement messages as defined by the Neighbor Discovery Protocol (NDP) <xref target="RFC4861"/> are sent by routers to hosts on the link.
-      Router Advertisement messages are an important tool in IPv6.
-      Many key protocols are defined around Router Advertisement messages.
+      Neighbor Discovery Protocol (NDP) <xref target="RFC4861"/> is used by IPv6 hosts to discover the presence of other nodes on the link.
+      It features important connectivity functionality such as link-layer address discovery and Stateless Address Autoconfiguration (SLAAC) as defined by <xref target="RFC4862"/>.
     </t>
     <t>
-      Neighbor Discovery Protocol is used by IPv6 hosts to discover the presence of other hosts and key information about neighbor hosts such as their link layer address <xref target="RFC4861"/>.
-      Another important functionality is Stateless Address Autoconfiguration (SLAAC) as defined by <xref target="RFC4862"/>.
+      Unlike DHCPv6 (<xref target="RFC3315"/>), NDP is usually implemented in the operating system kernel.
+      Frequent kernel updates due to new NDP options are seen critically.
+      This requires new NDP option proposals to clearly state the necessity and the benefits of a new option.
     </t>
     <t>
-      Yet another, perhaps more important functionality of Router Advertisement messages is route configuration.
-      <xref target="RFC4191"/> defines Prefix List and Default Router List or Routing Table structures that the hosts maintain.
-      Routing table maintainance is important for an increasing number of multi-interfaced hosts that use the strong end host model <xref target="RFC1122"/>, <xref target="RFC6250"/>.
-    </t>
-    <t>
-      <xref target="RFC7227"/> defines the guidelines to follow when creating new DHCP options.
-      Similar to DHCP, router advertisement messages carry options and the need to define new options arises every now and then.
-    </t>
-    <t>
-      So, although a given solution would work, and might even be space, time, or aesthetically optimal, a given option is presented with a series of ever-worsening challenges to be adopted:
-      <list>
-        <t>If it doesn't fit neatly into existing configuration files.</t>
-        <t>If it requires source code changes to be adopted and, hence, upgrades of deployed software.</t>
-        <t>If it requires behavior changes or new timers to be adopted and, hence, upgrades of deployed software.</t>
-        <t>If it does not share its deployment fate in a general manner with other options, standing alone in requiring code changes or reworking configuration file syntaxes.</t>
-        <t>If the option would work well in the particular deployment environment the proponents currently envision, but it has equally valid uses in some other environment where the proposed option format would fail or would produce inconsistent results.</t>
-      </list>
-      There are many things Router Advertisement option creators can do to avoid the pitfalls in this list entirely, or failing that, to make software implementors' lives easier and improve the options chances for widespread adoption.
-    </t>
-    <t>
-    This document is envisaged as a help for protocol developers that define new options and for expert reviewers that review submitted proposals.
+      This document is envisaged as a help for protocol developers that define new NDP options and for expert reviewers that review submitted proposals.
     </t>
   </section>
 
   <section title="Terminology">
     <t>
       The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in  <xref target="RFC2119"></xref>.
+    </t>
+    <t>
+      The terms "link", "node", "host" and "router" in this document are to be interpreted as described in the "Terminology" section of <xref target="RFC4861"></xref>.
     </t>
   </section>
 
@@ -341,7 +323,7 @@
 
   <section title='Acknowledgements'>
     <t>
-      TBD.
+      Mark Smith, Brian Carpenter
     </t>
   </section>
 </middle>
@@ -352,6 +334,7 @@
     <?rfc include='reference.RFC.1035'?>
     <?rfc include='reference.RFC.1122'?>
     <?rfc include='reference.RFC.2119'?>
+    <?rfc include='reference.RFC.3315'?>
     <?rfc include='reference.RFC.4191'?>
     <?rfc include='reference.RFC.4861'?>
     <?rfc include='reference.RFC.4862'?>
