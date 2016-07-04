@@ -5,8 +5,8 @@
 Network Working Group                                         D. Luedtke
 Internet-Draft                                                     SixFw
 Intended status: Best Current Practice                       B. Sarikaya
-Expires: January 4, 2017                                      Huawei USA
-                                                            July 3, 2016
+Expires: January 5, 2017                                      Huawei USA
+                                                            July 4, 2016
 
 
                      Guidelines for New NDP Options
@@ -32,7 +32,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on January 4, 2017.
+   This Internet-Draft will expire on January 5, 2017.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 1]
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 1]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
@@ -62,17 +62,17 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
-   3.  Considerations on the necessity . . . . . . . . . . . . . . .   3
+   3.  Adoption Challenges . . . . . . . . . . . . . . . . . . . . .   3
    4.  Considerations on the Options . . . . . . . . . . . . . . . .   4
      4.1.  Classification of Options . . . . . . . . . . . . . . . .   4
      4.2.  Considerations on Singleton Options . . . . . . . . . . .   4
-     4.3.  Considerations on Combined Options  . . . . . . . . . . .   5
+     4.3.  Considerations on Combined Options  . . . . . . . . . . .   4
      4.4.  Considerations on Expanding Options . . . . . . . . . . .   5
      4.5.  Considerations on Field Sizes . . . . . . . . . . . . . .   5
      4.6.  Considerations on Field Values  . . . . . . . . . . . . .   5
      4.7.  Considerations on Alignment . . . . . . . . . . . . . . .   6
      4.8.  Considerations on Packet Size . . . . . . . . . . . . . .   6
-     4.9.  RAs Spanning Over Multiple Packets  . . . . . . . . . . .   7
+     4.9.  NDP Messages Spanning Over Multiple Packets . . . . . . .   7
    5.  Recommended Sections  . . . . . . . . . . . . . . . . . . . .   7
      5.1.  Section on Host Configuration . . . . . . . . . . . . . .   7
      5.2.  Section on Router Configuration . . . . . . . . . . . . .   7
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 2]
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 2]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
@@ -128,67 +128,61 @@ Internet-Draft            RA Option Guidelines                 July 2016
    be interpreted as described in the "Terminology" section of
    [RFC4861].
 
-3.  Considerations on the necessity
+3.  Adoption Challenges
 
-   TODO: this whole section is currently just a bunch of dropped in
-   comments!
+   New NDP options face an implementation and deployment challenge:
 
-   a.  In the introduction you can add a few paragraph on RA options and
-       explain that in most systems these options are implemented in the
-       OS kernel and because of this when a new RA option is
-       standardized, kernel change and reboot becomes a necessity.  Such
-       operations are considered time taking and heavy on the routers.
+   a.  In most operating systems, NDP options are implemented in the
+       kernel.  If a new NDP option is standardized, kernel changes and
+       reboot becomes a necessity.  Such operations are considered time
+       taking and heavy on nodes, especially intermediate systems such
+       as routers.
 
-   b.  We can also discuss arguments against this: in most cases all
-       systems go though some improvements in their software and usually
-       new versions are regularly implemented and deployed and such
-       changes are usually carried out in certain times of the day where
-       the usage rates are smallest, i.e. midnights, etc.  So the idea
-       is that new RA options can be introduced during these rev-ups.
+   b.  On the other hand, many systems undergo updates regularly.
+       Usually new versions are regularly implemented and deployed.
+       Such changes are usually carried out in certain times of the day
+       where the usage rates are small, i.e. midnights.
 
-   c.  On the other hand Neighbor Discovery protocol options have a
-       different dynamic.  ND options are introduced when a new
-       interface is defined and when there is a need to define IPv6
-       operation over such an interface.  So if there is a need to
-       communicate using this new interfaces, all ND options defined
-       need to implemented.  You can give RFC 6775 as an example.
+   NDP options influence the behavior of nodes on a link.  IPv6 supports
+   many link technolgies, some using link-specific optimization such as
+   described in [RFC6775].  New NDP option developers SHOULD consider
+   how the new NDP option impacts the interaction of nodes on a link,
+   taking into account different link technologies.
 
-   d.  So, although a given solution would work, and might even be
-       space, time, or aesthetically optimal, a given option is
-       presented with a series of ever-worsening challenges to be
-       adopted:
+   Although a given NDP option would work, and might even be space,
+   time, or aesthetically optimal, a given option is presented with a
+   series of ever-worsening challenges to be adopted:
 
-       A.  If it doesn't fit neatly into existing configuration files.
+   a.  If it doesn't fit neatly into existing configuration files.
 
-       B.  If it requires source code changes to be adopted and, hence,
-           upgrades of deployed software.
+   b.  If it requires source code changes to be adopted and, hence,
+       upgrades of deployed software.
+
+   c.  If it requires behavior changes or new timers to be adopted and,
+       hence, upgrades of deployed software.
 
 
 
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 3]
+
+
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 3]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
 
-       C.  If it requires behavior changes or new timers to be adopted
-           and, hence, upgrades of deployed software.
+   d.  If it does not share its deployment fate in a general manner with
+       other options, standing alone in requiring code changes or
+       reworking configuration file syntaxes.
 
-       D.  If it does not share its deployment fate in a general manner
-           with other options, standing alone in requiring code changes
-           or reworking configuration file syntaxes.
+   e.  If the option would work well in the particular deployment
+       environment the proponents currently envision, but it has equally
+       valid uses in some other environment where the proposed option
+       format would fail or would produce inconsistent results.
 
-       E.  If the option would work well in the particular deployment
-           environment the proponents currently envision, but it has
-           equally valid uses in some other environment where the
-           proposed option format would fail or would produce
-           inconsistent results.
-
-       There are many things Router Advertisement option creators can do
-       to avoid the pitfalls in this list entirely, or failing that, to
-       make software implementors' lives easier and improve the options
-       chances for widespread adoption.
-
-   e.
+   There are many things NDP option developers can do to avoid the
+   pitfalls in this list entirely, or failing that, to make software
+   implementors' lives easier and improve the options chances for
+   widespread adoption.
 
 4.  Considerations on the Options
 
@@ -219,18 +213,19 @@ Internet-Draft            RA Option Guidelines                 July 2016
    Examples of such options are given in [RFC6106] and
    [I-D.ietf-mif-mpvd-ndp-support].
 
-
-
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 4]
-
-Internet-Draft            RA Option Guidelines                 July 2016
-
-
 4.3.  Considerations on Combined Options
 
    Stacking more than one data results in combined options.  Care should
    be taken in using combined options.  Data that are associated with
    each other should be combined together.  Otherwise it should be
+
+
+
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 4]
+
+Internet-Draft            RA Option Guidelines                 July 2016
+
+
    preferred to declare them as singleton options.  In combined options
    each piece of data is defined as fields of the option.
 
@@ -274,17 +269,18 @@ Internet-Draft            RA Option Guidelines                 July 2016
    SHOULD indicate that the option is no longer valid.  The latter is
    important when it is required to invalidate the option.  Options in
    need of a special value for infinity SHOULD use the lifetime field's
-
-
-
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 5]
-
-Internet-Draft            RA Option Guidelines                 July 2016
-
-
    maximum value (e.g. 65535 in case of 16-bit unsigned integer).  Any
    other non-zero value MAY be defining the option's lifetime in
    seconds.
+
+
+
+
+
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 5]
+
+Internet-Draft            RA Option Guidelines                 July 2016
+
 
    The starting octet for IPv6 addresses or prefixes or lists of such
    SHOULD be a multiple of 8.  In cases where this is not feasible, the
@@ -318,13 +314,13 @@ Internet-Draft            RA Option Guidelines                 July 2016
    fragmentation.  Therefore, a NDP option's overall length is bounded
    by the following upper limit:
 
-              IPv6 Minimum MTU   1280 [octets]
--           IPv6 header length     40 [octets]
--            NDP header length     16 [octets] (TODO: This covers RA, check others)
-- Expanded Flags option length      8 [octets]
-----------------------------------------------
-                                 1216 [octets]
-                                 =============
+                 IPv6 Minimum MTU   1280 [octets]
+   -           IPv6 header length     40 [octets]
+   -            NDP header length     16 [octets] (TODO: This covers RA
+   - Expanded Flags option length      8 [octets]        check others)
+   ----------------------------------------------
+                                    1216 [octets]
+                                    =============
 
    A NDP option's overall length MUST NOT exceed 1216 octets.
 
@@ -333,21 +329,26 @@ Internet-Draft            RA Option Guidelines                 July 2016
 
 
 
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 6]
+
+
+
+
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 6]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
 
-4.9.  RAs Spanning Over Multiple Packets
+4.9.  NDP Messages Spanning Over Multiple Packets
 
-   Due to many and/or large options, a NDP may not fit into a single
-   packet, such RAs are called RAs spanning over multiple packets.  In
-   this case the node sends multiple NDP messages with identical ICMPv6
-   header, filling each of the messages with different options.
+   Due to many and/or large options, a NDP message may not fit into a
+   single packet, such NDP messages are called NDP messages spanning
+   over multiple packets.  In this case the node sends multiple NDP
+   messages with identical ICMPv6 header, filling each of the messages
+   with different options.
 
-   Note that, if used, the Flags Expansion option as defined in
-   [RFC5175] is present in all NDP messages with identical ICMPv6
-   header.
+   Note that, in case of Router Advertisements, the Flags Expansion
+   option as defined in [RFC5175] is present in all NDP messages with
+   identical ICMPv6 header.
 
 5.  Recommended Sections
 
@@ -388,8 +389,7 @@ Internet-Draft            RA Option Guidelines                 July 2016
 
 
 
-
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 7]
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 7]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
@@ -431,7 +431,8 @@ Internet-Draft            RA Option Guidelines                 July 2016
 
 9.  Acknowledgements
 
-   Mark Smith, Brian Carpenter
+   The authors gratefully acknowledge the many helpful suggestions of
+   Mark Smith, Brian Carpenter, TBD
 
 10.  References
 
@@ -444,8 +445,7 @@ Internet-Draft            RA Option Guidelines                 July 2016
 
 
 
-
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 8]
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 8]
 
 Internet-Draft            RA Option Guidelines                 July 2016
 
@@ -493,18 +493,23 @@ Internet-Draft            RA Option Guidelines                 July 2016
               DOI 10.17487/RFC6250, May 2011,
               <http://www.rfc-editor.org/info/rfc6250>.
 
+   [RFC6775]  Shelby, Z., Ed., Chakrabarti, S., Nordmark, E., and C.
+              Bormann, "Neighbor Discovery Optimization for IPv6 over
+              Low-Power Wireless Personal Area Networks (6LoWPANs)",
+              RFC 6775, DOI 10.17487/RFC6775, November 2012,
+              <http://www.rfc-editor.org/info/rfc6775>.
+
+
+
+Luedtke & Sarikaya       Expires January 5, 2017                [Page 9]
+
+Internet-Draft            RA Option Guidelines                 July 2016
+
+
    [RFC7227]  Hankins, D., Mrugalski, T., Siodelski, M., Jiang, S., and
               S. Krishnan, "Guidelines for Creating New DHCPv6 Options",
               BCP 187, RFC 7227, DOI 10.17487/RFC7227, May 2014,
               <http://www.rfc-editor.org/info/rfc7227>.
-
-
-
-
-Luedtke & Sarikaya       Expires January 4, 2017                [Page 9]
-
-Internet-Draft            RA Option Guidelines                 July 2016
-
 
 10.2.  Informative References
 
@@ -552,9 +557,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-Luedtke & Sarikaya       Expires January 4, 2017               [Page 10]
+Luedtke & Sarikaya       Expires January 5, 2017               [Page 10]

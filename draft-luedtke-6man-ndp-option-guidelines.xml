@@ -91,43 +91,37 @@
     </t>
   </section>
 
-  <section anchor="need" title="Considerations on the necessity">
+  <section anchor="adoption" title="Adoption Challenges">
     <t>
-      TODO: this whole section is currently just a bunch of dropped in comments!
+      New NDP options face an implementation and deployment challenge:
       <list style="letters">
-        <t>In the introduction you can add a few paragraph on RA options and
-        explain that in most systems these options are implemented in the OS
-        kernel and because of this when a new RA option is standardized,
-        kernel change and reboot becomes a necessity. Such operations are
-        considered time taking and heavy on the routers.</t>
-        <t>We can also discuss arguments against this: in most cases all systems
-        go though some improvements in their software and usually new versions
-        are regularly implemented and deployed and such changes are usually
-        carried out in certain times of the day where the usage rates are
-        smallest, i.e. midnights, etc. So the idea is that new RA options can
-        be introduced during these rev-ups.
-</t>
-        <t>On the other hand Neighbor Discovery protocol options have a different
-        dynamic. ND options are introduced when a new interface is defined and
-        when there is a need to define IPv6 operation over such an interface.
-        So if there is a need to communicate using this new interfaces, all ND
-        options defined need to implemented. You can give RFC 6775 as an
-        example.</t>
-            <t>
-              So, although a given solution would work, and might even be space, time, or aesthetically optimal, a given option is presented with a series of ever-worsening challenges to be adopted:
-              <list>
-                <t>If it doesn't fit neatly into existing configuration files.</t>
-                <t>If it requires source code changes to be adopted and, hence, upgrades of deployed software.</t>
-                <t>If it requires behavior changes or new timers to be adopted and, hence, upgrades of deployed software.</t>
-                <t>If it does not share its deployment fate in a general manner with other options, standing alone in requiring code changes or reworking configuration file syntaxes.</t>
-                <t>If the option would work well in the particular deployment environment the proponents currently envision, but it has equally valid uses in some other environment where the proposed option format would fail or would produce inconsistent results.</t>
-              </list>
-              There are many things Router Advertisement option creators can do to avoid the pitfalls in this list entirely, or failing that, to make software implementors' lives easier and improve the options chances for widespread adoption.
-            </t>
-            <t>
-
-            </t>
+        <t>
+          In most operating systems, NDP options are implemented in the kernel.
+          If a new NDP option is standardized, kernel changes and reboot becomes a necessity.
+          Such operations are considered time taking and heavy on nodes, especially intermediate systems such as routers.
+        </t>
+        <t>
+          On the other hand, many systems undergo updates regularly.
+          Usually new versions are regularly implemented and deployed.
+          Such changes are usually carried out in certain times of the day where the usage rates are small, i.e. midnights.
+        </t>
       </list>
+    </t>
+    <t>
+      NDP options influence the behavior of nodes on a link.
+      IPv6 supports many link technolgies, some using link-specific optimization such as described in <xref target="RFC6775"></xref>.
+      New NDP option developers SHOULD consider how the new NDP option impacts the interaction of nodes on a link, taking into account different link technologies.
+    </t>
+    <t>
+      Although a given NDP option would work, and might even be space, time, or aesthetically optimal, a given option is presented with a series of ever-worsening challenges to be adopted:
+      <list style="letters">
+        <t>If it doesn't fit neatly into existing configuration files.</t>
+        <t>If it requires source code changes to be adopted and, hence, upgrades of deployed software.</t>
+        <t>If it requires behavior changes or new timers to be adopted and, hence, upgrades of deployed software.</t>
+        <t>If it does not share its deployment fate in a general manner with other options, standing alone in requiring code changes or reworking configuration file syntaxes.</t>
+        <t>If the option would work well in the particular deployment environment the proponents currently envision, but it has equally valid uses in some other environment where the proposed option format would fail or would produce inconsistent results.</t>
+      </list>
+      There are many things NDP option developers can do to avoid the pitfalls in this list entirely, or failing that, to make software implementors' lives easier and improve the options chances for widespread adoption.
     </t>
   </section>
 
@@ -238,8 +232,8 @@
       <figure align="center"><artwork align="center"><![CDATA[
               IPv6 Minimum MTU   1280 [octets]
 -           IPv6 header length     40 [octets]
--            NDP header length     16 [octets] (TODO: This covers RA, check others)
-- Expanded Flags option length      8 [octets]
+-            NDP header length     16 [octets] (TODO: This covers RA
+- Expanded Flags option length      8 [octets]        check others)
 ----------------------------------------------
                                  1216 [octets]
                                  =============
@@ -252,13 +246,13 @@
         Documents proposing large or variable length options SHOULD include an analysis clearly indicating that the size is not exceeded.
       </t>
     </section>
-        <section anchor="multiple" title="RAs Spanning Over Multiple Packets">
+        <section anchor="multiple" title="NDP Messages Spanning Over Multiple Packets">
         <t>
-        Due to many and/or large options, a NDP may not fit into a single packet, such RAs are called RAs spanning over multiple packets.
+        Due to many and/or large options, a NDP message may not fit into a single packet, such NDP messages are called NDP messages spanning over multiple packets.
         In this case the node sends multiple NDP messages with identical ICMPv6 header, filling each of the messages with different options.
         </t>
         <t>
-        Note that, if used, the Flags Expansion option as defined in <xref target="RFC5175"/> is present in all NDP messages with identical ICMPv6 header.
+        Note that, in case of Router Advertisements, the Flags Expansion option as defined in <xref target="RFC5175"/> is present in all NDP messages with identical ICMPv6 header.
       </t>
         </section>
   </section>
@@ -331,7 +325,8 @@
 
   <section title='Acknowledgements'>
     <t>
-      Mark Smith, Brian Carpenter
+      The authors gratefully acknowledge the many helpful suggestions of
+      Mark Smith, Brian Carpenter, TBD
     </t>
   </section>
 </middle>
@@ -349,6 +344,7 @@
     <?rfc include='reference.RFC.5175'?>
     <?rfc include='reference.RFC.6106'?>
     <?rfc include='reference.RFC.6250'?>
+    <?rfc include='reference.RFC.6775'?>
     <?rfc include='reference.RFC.7227'?>
   </references>
 
